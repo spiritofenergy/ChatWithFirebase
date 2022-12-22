@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ChatWithFirebase</string>
+    <string name="send">Send</string>
+    <string name="message">Message</string>
+    <string name="Chat">Сообщения</string>
+    <string name="signIn">Google</string>
+
+</resources>
