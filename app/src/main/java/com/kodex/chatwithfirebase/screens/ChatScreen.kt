@@ -1,12 +1,16 @@
 package com.kodex.chatwithfirebase.screens
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,24 +18,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.kodex.chatwithfirebase.MainViewModel
 import com.kodex.chatwithfirebase.R
 import com.kodex.chatwithfirebase.model.Note
+import com.kodex.chatwithfirebase.util.Constants
 import com.kodex.chatwithfirebase.util.Constants.Keys.SUBTITLE
 import com.kodex.chatwithfirebase.util.Constants.Keys.TITLE
-import com.squareup.picasso.Picasso
+import com.kodex.chatwithfirebase.util.DB_TYPE
+import com.kodex.chatwithfirebase.util.TYPE_FIREBASE
+import androidx.compose.runtime.livedata.observeAsState
+
 
 @Composable
 fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
+    val context = LocalContext.current
 
     var title by remember { mutableStateOf("")}
     var subtitle by remember { mutableStateOf("")}
 
+    val notes = viewModel.reedAllNotes().observeAsState(listOf()).value
     //val database = Firebase.database
     //val myRef = database.getReference("message")
    // val myRefName = database.getReference("name")
@@ -57,6 +64,13 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
     { innerPadding ->
         Modifier.padding(innerPadding)
     }
+
+    LazyColumn(modifier = Modifier.padding(vertical = 60.dp)){
+        items(notes) { note ->
+            NoteItem( note = note, navController = navController as NavHostController)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -114,6 +128,40 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
         }
     }
 }
+
+
+
+@Composable
+fun NoteItem(note: Note, navController: NavHostController) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 4.dp),
+        elevation = 6.dp
+    ){
+        Column(
+            modifier = Modifier
+                .padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = note.title,
+                fontSize = 24.sp,
+                color = Color.Red,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                color = Color.Red,
+                text = note.subtitle,
+            )
+        }
+    }
+
+
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun PrevChat(){

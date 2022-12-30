@@ -3,6 +3,8 @@ package com.kodex.chatwithfirebase
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kodex.chatwithfirebase.firebase.AppFirebaseRepository
 import com.kodex.chatwithfirebase.model.Note
@@ -30,4 +32,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
             }
         }
     }
+    fun reedAllNotes() = REPOSITORY.readAll
+
+
+
+
 }
