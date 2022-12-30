@@ -1,7 +1,7 @@
 package com.kodex.chatwithfirebase.screens
 
-import android.app.Application
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,29 +23,34 @@ import androidx.navigation.compose.rememberNavController
 import com.kodex.chatwithfirebase.MainViewModel
 import com.kodex.chatwithfirebase.R
 import com.kodex.chatwithfirebase.model.Note
-import com.kodex.chatwithfirebase.util.Constants
-import com.kodex.chatwithfirebase.util.Constants.Keys.SUBTITLE
-import com.kodex.chatwithfirebase.util.Constants.Keys.TITLE
-import com.kodex.chatwithfirebase.util.DB_TYPE
-import com.kodex.chatwithfirebase.util.TYPE_FIREBASE
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.res.stringResource
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.kodex.chatwithfirebase.util.Constants
+import com.kodex.chatwithfirebase.util.Constants.Keys.MESSAGE
+import com.kodex.chatwithfirebase.util.Constants.Keys.NAME
+import com.kodex.chatwithfirebase.util.DB_TYPE
+import com.kodex.chatwithfirebase.util.TYPE_DATABASE
+import com.kodex.chatwithfirebase.util.TYPE_FIREBASE
 
 
 @Composable
 fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
     val context = LocalContext.current
 
-    var title by remember { mutableStateOf("")}
-    var subtitle by remember { mutableStateOf("")}
+    var name by remember { mutableStateOf("")}
+    var message by remember { mutableStateOf("")}
 
     val notes = viewModel.reedAllNotes().observeAsState(listOf()).value
     //val database = Firebase.database
     //val myRef = database.getReference("message")
    // val myRefName = database.getReference("name")
    // myRef.setValue("Hello,ytergeryj World!!!")
-   // var auth: FirebaseAuth = Firebase.auth
+    var auth: FirebaseAuth = Firebase.auth
    // subtitle = auth.currentUser?.displayName.toString()
-   //  name = stringResource(id = R.string.app_name)
+     name = stringResource(id = R.string.app_name)
 
 
 
@@ -53,7 +58,7 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(subtitle,
+                    Text(name,
                         color = Color.White
                     )
                 },
@@ -79,16 +84,11 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = title,
-            onValueChange = { title = it},
-            label = { Text(color = Color.Red, text = "Введите текст") },
-        )
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = subtitle,
-            onValueChange = { subtitle = it},
+            value = message,
+            onValueChange = { message = it},
             label = { Text(color = Color.Red, text = "Введите текст") },
         )
         Button(
@@ -96,10 +96,9 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
                 .fillMaxWidth()
                 .padding(4.dp),
             onClick = {
-              TITLE = title
-                SUBTITLE = subtitle
-                viewModel.addNote(note = Note(title = title, subtitle = subtitle)) {
-                    Log.d("checkData", "Button pressed $title & $subtitle") }
+            // message = auth.currentUser?.displayName.toString()
+                viewModel.addNote(note = Note(name = name, message = message)) {
+                    Log.d("checkData", "Button pressed $name & $message") }
                // myRef.setValue(User(auth.currentUser?.displayName.toString()).toString())
               //  myRef.child(myRef.push().key ?: "Empty")
              //       .setValue(User(auth.currentUser?.displayName))
@@ -133,7 +132,7 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
 
 @Composable
 fun NoteItem(note: Note, navController: NavHostController) {
-
+    val noteId  = null
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -146,14 +145,14 @@ fun NoteItem(note: Note, navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = note.title,
+                text = note.name,
                 fontSize = 24.sp,
-                color = Color.Red,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                color = Color.Red,
-                text = note.subtitle,
+                color = Color.Black,
+                text = note.message,
             )
         }
     }

@@ -39,7 +39,6 @@ import com.kodex.chatwithfirebase.R
 import com.kodex.chatwithfirebase.ui.theme.ChatWithFirebaseTheme
 import com.kodex.chatwithfirebase.util.Constants
 import com.kodex.chatwithfirebase.util.LOGIN
-import com.kodex.chatwithfirebase.util.LoadingState
 import com.kodex.chatwithfirebase.util.PASSWORD
 
 
@@ -53,7 +52,7 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
     lateinit var auth: FirebaseAuth
 
     val snackbarHostState = remember { SnackbarHostState() }
- //   val state by viewModel.loadingState.collectAsState()
+    val state by viewModel.loadingState.collectAsState()
     val context = LocalContext.current
 
     // Equivalent of onActivityResult
@@ -62,7 +61,7 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
         try {
             val account = task.getResult(ApiException::class.java)!!
             val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-        //    viewModel.signWithCredential(credential)
+            viewModel.signWithCredential(credential)
         } catch (e: ApiException) {
             Log.w("TAG", "Google sign in failed", e)
         }
