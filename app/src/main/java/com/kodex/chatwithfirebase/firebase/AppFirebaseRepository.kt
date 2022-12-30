@@ -1,5 +1,6 @@
 package com.kodex.chatwithfirebase.firebase
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
@@ -27,6 +28,14 @@ class AppFirebaseRepository: DatabaseRepository {
         mapNotes[FIREBASE_ID] = noteId
         mapNotes[Constants.Keys.TITLE] = note.title
         mapNotes[Constants.Keys.SUBTITLE] = note.subtitle
+
+        database.child(noteId)
+            .updateChildren(mapNotes)
+            .addOnSuccessListener { onSuccess()
+                Log.d("MyLog", "addOnSuccessListener")}
+            .addOnFailureListener{
+                Log.d("MyLog","Filed ti add new note")
+            }
     }
 
     override suspend fun update(note: Note, onSuccess: () -> Unit) {

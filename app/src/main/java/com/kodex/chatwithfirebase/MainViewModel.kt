@@ -3,8 +3,12 @@ package com.kodex.chatwithfirebase
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.kodex.chatwithfirebase.firebase.AppFirebaseRepository
+import com.kodex.chatwithfirebase.model.Note
 import com.kodex.chatwithfirebase.util.REPOSITORY
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
     val context = application
@@ -15,5 +19,15 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
             { Log.d("CheckData", "Error: ${it}")}
         )
 
+    }
+    fun addNote (note: Note, onSuccess: () -> Unit){
+        viewModelScope.launch(Dispatchers.IO){
+            REPOSITORY.create(note = note){
+                Log.d("MyLog", "addNote")
+                viewModelScope.launch(Dispatchers.Main){
+                    onSuccess()
+                }
+            }
+        }
     }
 }
