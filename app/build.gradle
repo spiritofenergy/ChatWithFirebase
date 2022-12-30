@@ -72,6 +72,7 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
     debugImplementation "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_ui_version"
 
     def room_version = "2.4.2"
     implementation "androidx.room:room-runtime:$room_version"
