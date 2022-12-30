@@ -1,46 +1,30 @@
 package com.kodex.chatwithfirebase
 
-import android.content.Intent
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.kodex.chatwithfirebase.databinding.ActivityMainBinding
-import com.kodex.chatwithfirebase.screens.Chat
 import com.kodex.chatwithfirebase.ui.theme.ChatWithFirebaseTheme
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.kodex.chatwithfirebase.screens.ChatScreen
 import com.kodex.chatwithfirebase.screens.LoginScreen
 
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        var auth: FirebaseAuth
         setContent {
+            auth = Firebase.auth
             ChatWithFirebaseTheme {
-                LoginScreen()
+                    val navController = rememberNavController()
+                    val viewModel = viewModel<MainViewModel>()
+                Navigation(navController = navController, viewModel = viewModel )
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.kodex.chatwithfirebase
 
 import android.net.wifi.hotspot2.pps.Credential
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.SignInPassword
@@ -20,7 +21,11 @@ class LoginScreenViewModel: ViewModel() {
         try {
             loadingState.emit(LoadingState.LOADING)
             Firebase.auth.signInWithEmailAndPassword(email, password).await()
+            Log.d("MyLog", "$email & $password")
             loadingState.emit(LoadingState.LOADED)
+        } catch (e:Exception){
+            Firebase.auth.createUserWithEmailAndPassword(email, password).await()
+
         } catch (e:Exception){
             loadingState.emit(LoadingState.error(e.localizedMessage))
         }

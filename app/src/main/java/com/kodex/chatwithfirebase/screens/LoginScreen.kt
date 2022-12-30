@@ -2,6 +2,7 @@ package com.kodex.chatwithfirebase.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -18,14 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -33,23 +34,27 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.kodex.chatwithfirebase.LoginScreenViewModel
+import com.kodex.chatwithfirebase.MainViewModel
 import com.kodex.chatwithfirebase.R
 import com.kodex.chatwithfirebase.ui.theme.ChatWithFirebaseTheme
+import com.kodex.chatwithfirebase.util.Constants
+import com.kodex.chatwithfirebase.util.LOGIN
 import com.kodex.chatwithfirebase.util.LoadingState
+import com.kodex.chatwithfirebase.util.PASSWORD
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
+fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
 
-    var userEmail by remember { mutableStateOf("") }
-    var userPassword by remember { mutableStateOf("") }
+    var login by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     lateinit var auth: FirebaseAuth
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val state by viewModel.loadingState.collectAsState()
+ //   val state by viewModel.loadingState.collectAsState()
+    val context = LocalContext.current
 
     // Equivalent of onActivityResult
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -57,7 +62,7 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
         try {
             val account = task.getResult(ApiException::class.java)!!
             val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-            viewModel.signWithCredential(credential)
+        //    viewModel.signWithCredential(credential)
         } catch (e: ApiException) {
             Log.w("TAG", "Google sign in failed", e)
         }
@@ -65,10 +70,10 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
 
 
 
-    Scaffold(
-        scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState),
+    Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState),
         topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier
+                .fillMaxWidth()) {
                 TopAppBar(
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
                     elevation = 1.dp,
@@ -76,7 +81,9 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
                         Text(text = "Login")
                     },
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            navController.navigate("chat_screen")
+                        }) {
                             Icon(
                                 imageVector = Icons.Rounded.ArrowBack,
                                 contentDescription = null,
@@ -85,8 +92,8 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
                     },
                     actions = {
                         IconButton(onClick = {
-                            auth.signOut()
-
+                            Firebase.auth.signOut()
+                            Toast.makeText(context,"Вы вышли из аккаунта", Toast.LENGTH_LONG).show()
                         }) {
                             Icon(
                                 imageVector = Icons.Rounded.ExitToApp,
@@ -95,63 +102,34 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
                         }
                     }
                 )
-                if (state.status == LoadingState.Status.RUNNING) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
+             //  if (state.status == LoadingState.Status.RUNNING) {
+              //      LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+              //  }
             }
-        },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorResource(R.color.colorPrimary))
-                    .padding(24.dp),
+        }, content = {
+            Column(modifier = Modifier.fillMaxSize().background(colorResource(R.color.colorPrimary)).padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = userEmail,
-                        label = {
-                            Text(text = "Email")
-                        },
-                        onValueChange = {
-                            userEmail = it
-                        }
-                    )
+                    OutlinedTextField(value = login, onValueChange = { login = it }, modifier = Modifier.fillMaxWidth(), label = { Text(text = "Логин", color = Color.White)})
 
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = PasswordVisualTransformation(),
-                        value = userPassword,
-                        label = {
-                            Text(text = "Password")
-                        },
-                        onValueChange = {
-                            userPassword = it
-                        }
-                    )
+                    OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation(), label = { Text(text = "Пароль", color = Color.White) })
 
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        enabled = userEmail.isNotEmpty() && userPassword.isNotEmpty(),
-                        content = {
-                            Text(text = "Login")
-                        },
-                        onClick = {
-                            viewModel.signInWithEmailAndPassword(userEmail.trim(),
-                                userPassword.trim())
+                    Button(modifier = Modifier.fillMaxWidth().height(50.dp), enabled = login.isNotEmpty() && password.isNotEmpty(), content = {
+                            Text(text = "Login") }, onClick = {
+                                    LOGIN = login
+                                    PASSWORD = password
+                        Log.d("CheckData", "Pass: $password & Login: $login")
+                        viewModel.initDatabase(){
+                            navController.navigate(Constants.Screens.CHAT_SCREEN)
                         }
-                     )
+                           })
+                    Text(modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, style = MaterialTheme.typography.caption, text = "Login with")
 
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.caption,
-                        text = "Login with"
-                    )
+
+
+
+
 
                     Spacer(modifier = Modifier.height(18.dp))
 
@@ -203,7 +181,7 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
                         }
                     )
 
-                    when(state.status) {
+                  /*  when(state.status) {
                         LoadingState.Status.SUCCESS -> {
                             Text(text = "Успешная регистрация")
                         }
@@ -211,7 +189,7 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
                             Text(text = state.msg ?: "Ошибка регистрации")
                         }
                         else -> {}
-                    }
+                    }*/
                 }
             )
         }
@@ -221,7 +199,8 @@ fun LoginScreen(viewModel: LoginScreenViewModel = viewModel()) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
+    
     ChatWithFirebaseTheme(false) {
-        LoginScreen()
+       // LoginScreen(navController = rememberNavController() )
     }
 }
