@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,24 +19,25 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.kodex.chatwithfirebase.LoginScreenViewModel
 import com.kodex.chatwithfirebase.MainViewModel
 import com.kodex.chatwithfirebase.R
-import com.kodex.chatwithfirebase.User
+import com.kodex.chatwithfirebase.model.Note
+import com.kodex.chatwithfirebase.util.Constants.Keys.SUBTITLE
+import com.kodex.chatwithfirebase.util.Constants.Keys.TITLE
 import com.squareup.picasso.Picasso
 
 @Composable
 fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
 
-    var message by remember { mutableStateOf("")}
-    var name by remember { mutableStateOf("")}
+    var title by remember { mutableStateOf("")}
+    var subtitle by remember { mutableStateOf("")}
 
-    val database = Firebase.database
-    val myRef = database.getReference("message")
-    val myRefName = database.getReference("name")
+    //val database = Firebase.database
+    //val myRef = database.getReference("message")
+   // val myRefName = database.getReference("name")
    // myRef.setValue("Hello,ytergeryj World!!!")
-    var auth: FirebaseAuth = Firebase.auth
-    name = auth.currentUser?.displayName.toString()
+   // var auth: FirebaseAuth = Firebase.auth
+   // subtitle = auth.currentUser?.displayName.toString()
    //  name = stringResource(id = R.string.app_name)
 
 
@@ -46,11 +46,11 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(name,
+                    Text(subtitle,
                         color = Color.White
                     )
                 },
-                navigationIcon = { Picasso.get().load(auth.currentUser?.photoUrl) },
+            //    navigationIcon = { Picasso.get().load(auth.currentUser?.photoUrl) },
                 backgroundColor = (colorResource(R.color.colorPrimary))
             )
         })
@@ -67,8 +67,14 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = message,
-            onValueChange = { message = it},
+            value = title,
+            onValueChange = { title = it},
+            label = { Text(color = Color.Red, text = "Введите текст") },
+        )
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = subtitle,
+            onValueChange = { subtitle = it},
             label = { Text(color = Color.Red, text = "Введите текст") },
         )
         Button(
@@ -76,13 +82,14 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
                 .fillMaxWidth()
                 .padding(4.dp),
             onClick = {
-                name = auth.currentUser?.displayName.toString()
-                myRef.setValue(message)
-                myRefName.setValue(name)
+              TITLE = title
+                SUBTITLE = subtitle
+                viewModel.addNote(note = Note(title = title, subtitle = subtitle)) {
+                    Log.d("checkData", "Button pressed $title & $subtitle") }
                // myRef.setValue(User(auth.currentUser?.displayName.toString()).toString())
               //  myRef.child(myRef.push().key ?: "Empty")
              //       .setValue(User(auth.currentUser?.displayName))
-                Log.d("checkData", "Button pressed $message")
+
                       },
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.colorPrimary))
         ) {
