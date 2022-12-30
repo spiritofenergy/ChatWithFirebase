@@ -10,10 +10,9 @@ data class Note(
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
     @ColumnInfo
-    val title: String = "",
+    val name: String = "",
     @ColumnInfo
-    val subtitle: String = "",
-
+    val message: String = "",
     val firebaseId: String = ""
 
 

@@ -26,8 +26,8 @@ class AppFirebaseRepository: DatabaseRepository {
         val mapNotes = hashMapOf<String, Any>()
 
         mapNotes[FIREBASE_ID] = noteId
-        mapNotes[Constants.Keys.TITLE] = note.title
-        mapNotes[Constants.Keys.SUBTITLE] = note.subtitle
+        mapNotes[Constants.Keys.NAME] = note.name
+        mapNotes[Constants.Keys.MESSAGE] = note.message
 
         database.child(noteId)
             .updateChildren(mapNotes)
