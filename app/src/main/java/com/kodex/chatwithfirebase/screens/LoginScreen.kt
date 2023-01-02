@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -39,6 +40,7 @@ import com.kodex.chatwithfirebase.R
 import com.kodex.chatwithfirebase.ui.theme.ChatWithFirebaseTheme
 import com.kodex.chatwithfirebase.util.Constants
 import com.kodex.chatwithfirebase.util.LOGIN
+import com.kodex.chatwithfirebase.util.LoadingState
 import com.kodex.chatwithfirebase.util.PASSWORD
 
 
@@ -101,20 +103,25 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
                         }
                     }
                 )
-             //  if (state.status == LoadingState.Status.RUNNING) {
-              //      LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-              //  }
+               if (state.status == LoadingState.Status.RUNNING) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
             }
         }, content = {
-            Column(modifier = Modifier.fillMaxSize().background(colorResource(R.color.colorPrimary)).padding(24.dp),
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(R.color.colorPrimary))
+                .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
                  horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
-                    OutlinedTextField(value = login, onValueChange = { login = it }, modifier = Modifier.fillMaxWidth(), label = { Text(text = "Логин", color = Color.White)})
+                    OutlinedTextField(value = login, onValueChange = { login = it }, modifier = Modifier.fillMaxWidth(), label = { Text(text = "Логин", color = Color.White)}, isError = login.isEmpty())
 
-                    OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation(), label = { Text(text = "Пароль", color = Color.White) })
+                    OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation(), label = { Text(text = "Пароль", color = Color.White)}, isError = password.isEmpty())
 
-                    Button(modifier = Modifier.fillMaxWidth().height(50.dp), enabled = login.isNotEmpty() && password.isNotEmpty(), content = {
+                    Button(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp), enabled = login.isNotEmpty() && password.isNotEmpty(), content = {
                             Text(text = "Login") }, onClick = {
                                     LOGIN = login
                                     PASSWORD = password
@@ -146,7 +153,10 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
                                 .build()
                             val googleSignInClient = GoogleSignIn.getClient(context, gso)
                             launcher.launch(googleSignInClient.signInIntent)
-                        },
+                            navController.navigate(Constants.Screens.CHAT_SCREEN)
+                           // Log.d("checkData", "Button pressed ${auth.currentUser?.displayName.toString()}")
+
+                },
                         colors = ButtonDefaults.buttonColors(
                             colorResource(
                                 id = R.color.colorPrimaryDark
@@ -180,7 +190,7 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
                         }
                     )
 
-                  /*  when(state.status) {
+                    when(state.status) {
                         LoadingState.Status.SUCCESS -> {
                             Text(text = "Успешная регистрация")
                         }
@@ -188,7 +198,7 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
                             Text(text = state.msg ?: "Ошибка регистрации")
                         }
                         else -> {}
-                    }*/
+                    }
                 }
             )
         }
@@ -200,6 +210,6 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
 fun LoginScreenPreview() {
     
     ChatWithFirebaseTheme(false) {
-       // LoginScreen(navController = rememberNavController() )
+        LoginScreen(navController = rememberNavController(), viewModel = viewModel())
     }
 }

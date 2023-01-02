@@ -15,28 +15,6 @@ import kotlinx.coroutines.tasks.await
 
 class LoginScreenViewModel: ViewModel() {
 
-    val loadingState  = MutableStateFlow(LoadingState.IDLE)
 
-    fun signInWithEmailAndPassword(email: String, password: String) = viewModelScope.launch {
-        try {
-            loadingState.emit(LoadingState.LOADING)
-            Firebase.auth.signInWithEmailAndPassword(email, password).await()
-            Log.d("MyLog", "$email & $password")
-            loadingState.emit(LoadingState.LOADED)
-        } catch (e:Exception){
-            Firebase.auth.createUserWithEmailAndPassword(email, password).await()
 
-        } catch (e:Exception){
-            loadingState.emit(LoadingState.error(e.localizedMessage))
-        }
-    }
-    fun signWithCredential(credential: AuthCredential) = viewModelScope.launch {
-        try {
-            loadingState.emit(LoadingState.LOADING)
-            Firebase.auth.signInWithCredential(credential).await()
-            loadingState.emit(LoadingState.LOADED)
-        }catch (e: Exception){
-            loadingState.emit(LoadingState.error(e.localizedMessage))
-        }
-    }
 }

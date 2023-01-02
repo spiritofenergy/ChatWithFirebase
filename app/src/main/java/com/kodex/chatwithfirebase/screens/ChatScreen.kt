@@ -27,6 +27,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.kodex.chatwithfirebase.util.Constants
 import com.kodex.chatwithfirebase.util.Constants.Keys.MESSAGE
@@ -43,8 +44,8 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
     var name by remember { mutableStateOf("")}
     var message by remember { mutableStateOf("")}
 
-    val notes = viewModel.reedAllNotes().observeAsState(listOf()).value
-    //val database = Firebase.database
+        val notes = viewModel.reedAllNotes().observeAsState(listOf()).value
+   // val database = Firebase.database
     //val myRef = database.getReference("message")
    // val myRefName = database.getReference("name")
    // myRef.setValue("Hello,ytergeryj World!!!")
@@ -90,6 +91,7 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
             value = message,
             onValueChange = { message = it},
             label = { Text(color = Color.Red, text = "Введите текст") },
+            isError = message.isEmpty()
         )
         Button(
             modifier = Modifier
@@ -98,7 +100,8 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
             onClick = {
             // message = auth.currentUser?.displayName.toString()
                 viewModel.addNote(note = Note(name = name, message = message)) {
-                    Log.d("checkData", "Button pressed $name & $message") }
+                    Log.d("checkData", "Button pressed $name & $message")
+                    Log.d("checkData", "Button pressed ${auth.currentUser?.displayName.toString()} & $message") }
                // myRef.setValue(User(auth.currentUser?.displayName.toString()).toString())
               //  myRef.child(myRef.push().key ?: "Empty")
              //       .setValue(User(auth.currentUser?.displayName))
