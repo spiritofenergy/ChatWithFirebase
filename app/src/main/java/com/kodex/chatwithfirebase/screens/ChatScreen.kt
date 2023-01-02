@@ -29,12 +29,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.kodex.chatwithfirebase.util.Constants
+import com.kodex.chatwithfirebase.util.*
 import com.kodex.chatwithfirebase.util.Constants.Keys.MESSAGE
 import com.kodex.chatwithfirebase.util.Constants.Keys.NAME
-import com.kodex.chatwithfirebase.util.DB_TYPE
-import com.kodex.chatwithfirebase.util.TYPE_DATABASE
-import com.kodex.chatwithfirebase.util.TYPE_FIREBASE
 
 
 @Composable
@@ -51,7 +48,8 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
    // myRef.setValue("Hello,ytergeryj World!!!")
     var auth: FirebaseAuth = Firebase.auth
    // subtitle = auth.currentUser?.displayName.toString()
-     name = stringResource(id = R.string.app_name)
+    // name = stringResource(id = R.string.app_name)
+    name = auth.currentUser?.displayName.toString()
 
 
 
@@ -101,7 +99,7 @@ fun ChatScreen(navController: NavController, viewModel: MainViewModel) {
             // message = auth.currentUser?.displayName.toString()
                 viewModel.addNote(note = Note(name = name, message = message)) {
                     Log.d("checkData", "Button pressed $name & $message")
-                    Log.d("checkData", "Button pressed ${auth.currentUser?.displayName.toString()} & $message") }
+                    Log.d("checkData", "Button pressed ${auth.currentUser?.displayName} & $message") }
                // myRef.setValue(User(auth.currentUser?.displayName.toString()).toString())
               //  myRef.child(myRef.push().key ?: "Empty")
              //       .setValue(User(auth.currentUser?.displayName))

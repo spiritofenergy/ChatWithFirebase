@@ -51,7 +51,8 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    lateinit var auth: FirebaseAuth
+   // lateinit var auth: FirebaseAuth
+    var auth: FirebaseAuth = Firebase.auth
 
     val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.loadingState.collectAsState()
@@ -153,8 +154,8 @@ fun LoginScreen(viewModel: MainViewModel, navController: NavHostController) {
                                 .build()
                             val googleSignInClient = GoogleSignIn.getClient(context, gso)
                             launcher.launch(googleSignInClient.signInIntent)
-                            navController.navigate(Constants.Screens.CHAT_SCREEN)
-                           // Log.d("checkData", "Button pressed ${auth.currentUser?.displayName.toString()}")
+
+                            Log.d("checkData", "Button pressed ${auth.currentUser?.displayName.toString()}")
 
                 },
                         colors = ButtonDefaults.buttonColors(
